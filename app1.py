@@ -49,6 +49,29 @@ from disasters.drought    import (render_drought_page, make_spi_timeseries,
                                    make_water_stress_chart, make_groundwater_chart,
                                    make_crop_impact_chart)
 
+# ── Safe wrappers for chart functions that return (fig, value) tuples ──
+def _inundation_fig(rainfall, river_level, elevation, color):
+    result = make_inundation_chart(rainfall, river_level, elevation, color)
+    return result[0] if isinstance(result, tuple) else result
+
+def _fire_spread_fig(temp, humidity, wind, veg, color):
+    result = make_fire_spread_chart(temp, humidity, wind, veg, color)
+    return result[0] if isinstance(result, tuple) else result
+
+def _flame_spotting_fig(wind, temp, humidity, color):
+    result = make_flame_spotting_chart(wind, temp, humidity, color)
+    return result[0] if isinstance(result, tuple) else result
+
+def _runup_fig(wave_height, coastal_dist, color):
+    result = make_runup_chart(wave_height, coastal_dist, color)
+    return result[0] if isinstance(result, tuple) else result
+
+def _travel_time_fig(bathymetry, origin_lat, origin_lon, color):
+    result = make_travel_time_chart(bathymetry, origin_lat, origin_lon, color)
+    return result[0] if isinstance(result, tuple) else result
+
+
+
 st.set_page_config(page_title="SENTINEL v3 — Disaster AI", page_icon="🛰️",
                    layout="wide", initial_sidebar_state="expanded")
 st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
@@ -1107,9 +1130,9 @@ elif "what" in page.lower() or "scenario" in page.lower():
     with wi_tab4:
         col_wf={"Low":"#00ff88","Moderate":"#ffd700","High":"#ff7700","Critical":"#ff2244"}.get(wf_risk,"#ff4400")
         wc1,wc2=st.columns(2)
-        fig_s,_=make_fire_spread_chart(wi_temp,wi_humid,wi_wind,80.0,col_wf)
+        fig_s=_fire_spread_fig(wi_temp,wi_humid,wi_wind,80.0,col_wf)
         with wc1: st.plotly_chart(fig_s,use_container_width=True)
-        fig_fl,_=make_flame_spotting_chart(wi_wind,wi_temp,wi_humid,col_wf)
+        fig_fl=_flame_spotting_fig(wi_wind,wi_temp,wi_humid,col_wf)
         with wc2: st.plotly_chart(fig_fl,use_container_width=True)
         st.plotly_chart(make_fwi_gauge_chart(fwi_val,col_wf),use_container_width=True)
     with wi_tab5:
